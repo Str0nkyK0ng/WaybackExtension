@@ -9,9 +9,6 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "icons/refresh_1.png"
-    }
+    "default_title": "Click to show an alert"
   }
 }

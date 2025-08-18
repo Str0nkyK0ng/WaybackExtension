@@ -1,10 +1,11 @@
-let loading = false;
+// let loading = false;
+
 async function getClosestDate(url) {
   let urlParams = {
     url: url,
     from: '20241206010101', //december 2024
     to: '20250106010101', //january 2025
-    limit: -1,
+    limit: -1, // latest snapshot
     output: 'json',
     fl: 'timestamp',
   };
@@ -65,13 +66,6 @@ async function run(tab) {
 
 //some setup
 chrome.action.onClicked.addListener(async (tab) => {
-  if (loading == true) {
-    return;
-  }
-  //start a timeout that swaps between two icons
-  loading = true;
-  //   set background color to white
-
   let html = await run(tab);
 
   await chrome.scripting.executeScript({
