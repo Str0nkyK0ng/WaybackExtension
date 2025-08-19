@@ -1,25 +1,11 @@
 'use strict';
 
+import { DiffDOM } from 'diff-dom';
+
 // With background scripts you can communicate with popup
 // and contentScript files.
 // For more information on background script,
 // See https://developer.chrome.com/extensions/background_pages
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'GREETINGS') {
-    const message = `Hi ${
-      sender.tab ? 'Con' : 'Pop'
-    }, my name is Bac. I am from Background. It's great to hear from you.`;
-
-    // Log message coming from the `request` parameter
-    console.log(request.payload.message);
-    // Send a response message
-    sendResponse({
-      message,
-    });
-  }
-});
-// let loading = false;
 
 async function getClosestDate(url) {
   let urlParams = {
@@ -66,13 +52,12 @@ async function getClosestArchive(site, date) {
 async function getHTMLContent(url) {
   try {
     const res = await fetch(url);
-    return (text = await res.text());
+    return await res.text();
   } catch (e) {
-    return (text = `<h1>Fetch failed: ${e}</h1>`);
+    return `<h1>Fetch failed: ${e}</h1>`;
   }
 }
-async function run(tab) {
-  const currentTab = tab.url;
+async function run(currentTab) {
   console.log(`Current tab URL: ${currentTab}`);
   let closestDate = await getClosestDate(currentTab);
   console.log(`Closest date: ${closestDate}`);
@@ -85,18 +70,25 @@ async function run(tab) {
   return html;
 }
 
-//some setup
-chrome.action.onClicked.addListener(async (tab) => {
-  let html = await run(tab);
+let currentHTML;
+//communicate with the content script to use the html / url
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  if (request.type === 'INITIAL') {
+    currentHTML = request.payload.html;
+    let url = request.payload.URL;
+    console.log(url);
+    //send a response
+    let html = await run(url);
+    let dd = new DiffDOM();
+    console.log(JSON.stringify(html));
+    console.log(JSON.stringify(currentHTML));
 
-  await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: (h) => {
-      loading = false;
-      document.open();
-      document.write(h);
-      document.close();
-    },
-    args: [html],
-  });
+    let dred = dd.diff(currentHTML, html);
+    console.log(JSON.stringify(dred));
+
+    //TODO: Send a response
+    sendResponse({});
+  }
+
+  return true;
 });
