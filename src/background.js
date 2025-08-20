@@ -1,13 +1,13 @@
 'use strict';
-
-import { DiffDOM } from 'diff-dom';
-
 // With background scripts you can communicate with popup
 // and contentScript files.
 // For more information on background script,
 // See https://developer.chrome.com/extensions/background_pages
 
-async function getClosestDate(url) {
+import { DiffDOM } from 'diff-dom';
+console.log('Background Worker Initialized');
+async function getClosestSnapshot(url) {
+  console.log(`Looking for closest snapshot to: ${url}`);
   let urlParams = {
     url: url,
     from: '20241206010101', //december 2024
@@ -20,17 +20,17 @@ async function getClosestDate(url) {
   Object.keys(urlParams).forEach((key) =>
     searchUrl.searchParams.append(key, urlParams[key])
   );
-  console.log(`Fetching closest date for: ${searchUrl}`);
   let response = await fetch(searchUrl);
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
   }
   let data = await response.json();
+  console.log('Closest earch Response:' + JSON.stringify(data));
   if (data.length > 1) {
     // The first entry is the header, so we take the second one
     return data[1][0]; // Return the timestamp
   } else {
-    throw new Error('No archived snapshot available');
+    throw new Error('No archived snapshot available:' + JSON.stringify(data));
   }
 }
 
@@ -46,7 +46,7 @@ async function getClosestArchive(site, date) {
   if (data.archived_snapshots.closest) {
     return data.archived_snapshots.closest.url;
   } else {
-    throw new Error('No archived snapshot available');
+    throw new Error('Error getting snapshot:' + JSON.stringify(data));
   }
 }
 async function getHTMLContent(url) {
@@ -58,8 +58,7 @@ async function getHTMLContent(url) {
   }
 }
 async function run(currentTab) {
-  console.log(`Current tab URL: ${currentTab}`);
-  let closestDate = await getClosestDate(currentTab);
+  let closestDate = await getClosestSnapshot(currentTab);
   console.log(`Closest date: ${closestDate}`);
   let closestURL = await getClosestArchive(currentTab, closestDate);
   console.log(`Closest URL: ${closestURL}`);
@@ -87,7 +86,12 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     console.log(JSON.stringify(dred));
 
     //TODO: Send a response
-    sendResponse({});
+    sendResponse({
+      type: 'REPLACE',
+      payload: {
+        html,
+      },
+    });
   }
 
   return true;

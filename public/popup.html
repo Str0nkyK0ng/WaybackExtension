@@ -2,25 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>My Chrome Extension</title>
+    <title>Wayback Extension</title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <div class="app">
-      <p class="counter-label">Counter</p>
+      <p id="url">URL:</p>
+      <p class="counter-label">Search Range</p>
       <div id="counter" class="counter"></div>
       <div class="button-container">
-        <button id="decrementBtn" class="button">-</button>
-        <button id="incrementBtn" class="button">+</button>
+        <input
+          type="date"
+          id="start"
+          name="search-start"
+          value="2025-01-01"
+          min="1996-10-01"
+          max=""
+        />
+        <input
+          type="date"
+          id="end"
+          name="search-end"
+          min="2018-01-01"
+          value=""
+          max=""
+        />
+        <button id="search" class="button">Search</button>
       </div>
 
       <hr class="divider" />
-
-      <p class="title">Chrome Extension is Ready!</p>
-      <p class="subtitle">Start by updating <code>popup.html</code></p>
+      <script src="popup.js"></script>
     </div>
-
-    <script src="popup.js"></script>
 
     <!--
       This HTML file opens when you click on icon from the toolbar.
