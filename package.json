@@ -22,6 +22,7 @@
     "webpack-merge": "^5.10.0"
   },
   "dependencies": {
-    "diff-dom": "^5.2.0"
+    "diff-dom": "^5.2.0",
+    "utf8": "^3.0.0"
   }
 }

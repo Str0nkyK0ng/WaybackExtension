@@ -8,13 +8,25 @@ function sendToContentScript(json) {
 let startDate = document.getElementById('start');
 let endDate = document.getElementById('end');
 let searchButton = document.getElementById('search');
-let urlHeader = document.getElementById('url');
-
+let statusHeader = document.getElementById('status');
 console.log('Popup script running.');
 
-console.log(new Date().toISOString().split('T')[0]);
-endDate.value = new Date().toISOString().split('T')[0];
-urlHeader.value = document.URL;
+let defaultStart = new Date('2024-12-01');
+let defaultEnd = new Date('2025-01-01');
+
+startDate.value = defaultStart.toISOString().split('T')[0];
+endDate.value = defaultEnd.toISOString().split('T')[0];
+
+// let loading = true;
+// let dots = 0;
+// function statusBlink() {
+//   if (!loading) return;
+//   dots = (dots + 1) % 3;
+//   statusHeader.textContent = 'Loading' + '.'.repeat(dots + 1);
+//   setTimeout(() => {
+//     statusBlink();
+//   }, 1000);
+// }
 
 searchButton.addEventListener('click', () => {
   const start = startDate.value;

@@ -20,3 +20,4 @@ TODO: Insert RC github thingy here
 ### After Session:
  - TODO: Look at licenses (LGPL versus GPL)
  - Don't pass HTML from Content Worker -> Background Worker
+ - Apply changes of DIFF to Dom
