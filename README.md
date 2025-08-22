@@ -1,23 +1,15 @@
 # <img src="public/icons/icon_48.png" width="45" align="left">  Wayback Extension
 
 
-## Install
+## Importing Into Chrome
+`npm run build` should create a build folder.
+Go to extensions. Click on "Load Unpacked" and then select the build folder.
 
-[**Chrome** extension]() <!-- TODO: Add chrome extension link inside parenthesis -->
+## Development
+- This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
+- Run `npm run watch` to setup webpack
+- Run `web-ext run --target=chromium --source-dir ./build` to open up a Chrome Session that will auto-refresh
 
-## Contribution
+## TODO: Contributors
 
-
-This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
-
-TODO: Insert RC github thingy here
-
-
-
-## Session 2
-
-
-### After Session:
- - TODO: Look at licenses (LGPL versus GPL)
- - Don't pass HTML from Content Worker -> Background Worker
- - Apply changes of DIFF to Dom
+## TODO: Contributors
