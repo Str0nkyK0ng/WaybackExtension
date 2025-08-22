@@ -10,10 +10,15 @@
     "48": "icons/icon_48.png",
     "128": "icons/icon_128.png"
   },
-  "permissions": ["tabs", "scripting", "activeTab", "notifications"],
+  "permissions": ["tabs", "scripting", "activeTab", "notifications", "storage"],
   "background": {
     "service_worker": "background.js"
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+
   "action": {
     "default_title": "Click to show an alert",
     "default_popup": "popup.html"

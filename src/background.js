@@ -25,6 +25,17 @@ async function getClosestSnapshot(url, start, end) {
   }
   let data = await response.json();
   console.log('Closest earch Response:' + JSON.stringify(data));
+
+  // Send the response back to the popup
+  chrome.runtime.sendMessage({
+    type: 'SEARCH_RESULT',
+    payload: {
+      data: data,
+      url: url,
+      timestamp: data.length > 1 ? data[1][0] : null,
+    },
+  });
+
   if (data.length > 1) {
     // The first entry is the header, so we take the second one
     return data[1][0]; // Return the timestamp

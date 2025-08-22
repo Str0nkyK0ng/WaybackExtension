@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extension Options</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        max-width: 500px;
+      }
+      .option-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type='color'] {
+        width: 50px;
+        height: 30px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+      .save-btn {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      .save-btn:hover {
+        background-color: #45a049;
+      }
+    </style>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <h1>Wayback Extension Options</h1>
+    <div id="status"></div>
+    <div class="option-group">
+      <label for="oldContentColor">Old Content Highlight Color:</label>
+      <input type="color" id="oldContentColor" value="#ffcccc" />
+    </div>
+
+    <div class="option-group">
+      <label for="newContentColor">New Content Highlight Color:</label>
+      <input type="color" id="newContentColor" value="#ccffcc" />
+    </div>
+
+    <button class="save-btn" id="saveBtn">Save Options</button>
+
+    <script src="options.js"></script>
+  </body>
+</html>

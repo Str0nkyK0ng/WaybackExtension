@@ -15,6 +15,18 @@ import { DiffDOM } from 'diff-dom';
 // Log `title` of current active web page
 
 // Communicate with background file by sending a message
+import HtmlDiff from 'htmldiff-js';
+
+let newContentColor;
+let oldContentColor;
+await chrome.storage.sync.get(
+  { oldContentColor: '#ffcccc', newContentColor: '#ccffcc' },
+  (items) => {
+    newContentColor = items.newContentColor;
+    oldContentColor = items.oldContentColor;
+    console.log('Content Colors:', newContentColor, oldContentColor);
+  }
+);
 
 console.log('Content script running.');
 // Listen for message
@@ -40,50 +52,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.type === 'REPLACE') {
     let oldHTML = request.payload.html;
-    let parser = new DOMParser();
-    let oldDocument = parser.parseFromString(oldHTML, 'text/html');
     console.log('Calculating diff to apply');
 
-    let diffRanges = [];
-    let dd = new DiffDOM({
-      preVirtualDiffApply: function (info) {
-        console.log('preVirtualDiffApply', JSON.stringify(info));
-        // let diff = info.diff;
+    document.documentElement.innerHTML = HtmlDiff.execute(
+      oldHTML,
+      document.documentElement.innerHTML
+    );
 
-        // if (diff.action == 'replaceElement' && diff.oldValue && diff.newValue) {
-        // }
-      },
-      // preDiffApply: function (info) {
-      //   console.log('preDiffApply', info);
-      // },
-      // postDiffApply: function (info) {
-      //   let range = new Range();
-
-      //   // Set range based on the node being modified
-      //   if (info.node && info.node.parentNode) {
-      //     console.log(info);
-      //     range.setStartBefore(info.node);
-      //     range.setEndAfter(info.node);
-      //     diffRanges.push(range);
-      //   }
-      // },
-    });
-    //style all the ranges
-
-    let domdif = dd.diff(document.documentElement, oldDocument.documentElement);
-    // console.log('Diff', JSON.stringify(domdif));
-    // Apply the diff to the actual DOM
-    dd.apply(document.documentElement, domdif);
-    //also inject this css
-    let style = document.createElement('style');
+    // Add styling for diff modifications
+    const style = document.createElement('style');
     style.textContent = `
-      ::highlight(user-1-highlight) {
-        background-color: yellow;
-        color: black;
+      ins {
+      background-color: ${newContentColor};
+      font-style: italic;
       }
+      del  {
+      background-color: ${oldContentColor};
+      font-style: italic;
+      }
+
     `;
-    let highlight = new Highlight(...diffRanges);
-    CSS.highlights.set('user-1-highlight', highlight);
     document.head.appendChild(style);
+
+    // tell the popup that the work is complete
+    chrome.runtime.sendMessage({
+      type: 'SEARCH_COMPLETE',
+    });
   }
 });
