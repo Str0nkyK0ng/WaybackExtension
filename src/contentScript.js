@@ -39,52 +39,51 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.runtime.sendMessage(message);
   }
   if (request.type === 'REPLACE') {
-    console.log('Calculating diff to apply');
     let oldHTML = request.payload.html;
     let parser = new DOMParser();
     let oldDocument = parser.parseFromString(oldHTML, 'text/html');
+    console.log('Calculating diff to apply');
 
+    let diffRanges = [];
     let dd = new DiffDOM({
-      preDiffApply: function (info) {
-        // Skip if replacing a SCRIPT element
-        if (info.diff.action === 'replaceElement') {
-          let newHTML = info.diff.newValue;
-          if (newHTML) {
-            if (
-              newHTML.nodeName === 'SCRIPT' &&
-              newHTML.attributes &&
-              newHTML.attributes.src
-            ) {
-              console.log('Removed Script', JSON.stringify(info));
-              return true;
-            }
-            if (
-              (newHTML.attributes &&
-                newHTML.attributes.rel === 'stylesheet prefetch') ||
-              (oldHTML &&
-                oldHTML.attributes &&
-                oldHTML.attributes.rel === 'stylesheet prefetch')
-            ) {
-              console.log('Removed external CSS', JSON.stringify(info));
-              return true;
-            }
-          }
-        }
-        // Skip if adding or replacing an element with rel="stylesheet prefetch"
+      preVirtualDiffApply: function (info) {
+        console.log('preVirtualDiffApply', JSON.stringify(info));
+        // let diff = info.diff;
 
-        // {"action":"addElement","element":{"nodeName":"SCRIPT"}}
-        if (
-          info.diff.action == 'addElement' &&
-          info.diff.element.nodeName == 'SCRIPT'
-        ) {
-          console.log(JSON.stringify(info));
-          return true;
-        }
+        // if (diff.action == 'replaceElement' && diff.oldValue && diff.newValue) {
+        // }
       },
+      // preDiffApply: function (info) {
+      //   console.log('preDiffApply', info);
+      // },
+      // postDiffApply: function (info) {
+      //   let range = new Range();
+
+      //   // Set range based on the node being modified
+      //   if (info.node && info.node.parentNode) {
+      //     console.log(info);
+      //     range.setStartBefore(info.node);
+      //     range.setEndAfter(info.node);
+      //     diffRanges.push(range);
+      //   }
+      // },
     });
+    //style all the ranges
+
     let domdif = dd.diff(document.documentElement, oldDocument.documentElement);
-    console.log('Diff', JSON.stringify(domdif));
+    // console.log('Diff', JSON.stringify(domdif));
     // Apply the diff to the actual DOM
     dd.apply(document.documentElement, domdif);
+    //also inject this css
+    let style = document.createElement('style');
+    style.textContent = `
+      ::highlight(user-1-highlight) {
+        background-color: yellow;
+        color: black;
+      }
+    `;
+    let highlight = new Highlight(...diffRanges);
+    CSS.highlights.set('user-1-highlight', highlight);
+    document.head.appendChild(style);
   }
 });

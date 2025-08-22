@@ -34,61 +34,29 @@ async function getClosestSnapshot(url, start, end) {
 }
 
 async function getClosestArchive(site, date) {
+  let url = new URL(`https://web.archive.org/web/${date}/${site}`);
   // It's odd, but the archive might store the site under http or https. So we'll fetch both
   site = site.replace(/^https?:\/\//, '');
-  const protocols = ['http://', 'https://'];
-  let lastError;
-  for (const protocol of protocols) {
-    let urlParams = {
-      url: utf8.encode(protocol + site),
-      timestamp: date,
-    };
-    const url = new URL(`https://archive.org/wayback/available`);
-    Object.keys(urlParams).forEach((key) =>
-      url.searchParams.append(key, urlParams[key])
-    );
-    console.log(`Fetching closest archive for: ${url}`);
+  console.log(`Fetching archive for: ${url} on ${date}`);
 
-    try {
-      let response = await fetch(url);
-      if (!response.ok) {
-        lastError = `HTTP error! status: ${response.status}`;
-        continue;
-      }
-      let data = await response.json();
-      if (data.archived_snapshots.closest) {
-        return data.archived_snapshots.closest.url;
-      }
-    } catch (e) {
-      lastError = e;
-      console.error('Error on protocol', protocol, ' ', e);
-      continue;
-    }
-  }
-  throw new Error('Error getting snapshot: ' + lastError);
-}
-
-async function getHTMLContent(url) {
   try {
-    const res = await fetch(url);
-    return await res.text();
+    let response = await fetch(url);
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+    }
+    let text = await response.text();
+    return text;
   } catch (e) {
-    console.error(e);
+    console.error('Error:', e);
   }
 }
+
 async function run(currentTab, startTime, endTime) {
   let closestDate = await getClosestSnapshot(currentTab, startTime, endTime);
   console.log(`Closest date: ${closestDate}`);
   let closestURL = await getClosestArchive(currentTab, closestDate);
-  // promote down to http
-  closestURL = closestURL.replace('https', 'http');
-  // Postpend 'fw_' after the timestamp in the closestURL
-  closestURL = closestURL.replace(/(\/web\/\d{14})/, '$1fw_');
-  console.log(`Closest URL: ${closestURL}`);
-  // attempt to add some text to the path after /web
-  let html = await getHTMLContent(closestURL);
-  console.log(`Got Old HTML Content: ${html}`);
-  return html;
+  console.log(`Got Old HTML Content: ${closestURL}`);
+  return closestURL;
 }
 
 //communicate with the content script to use the html / url
