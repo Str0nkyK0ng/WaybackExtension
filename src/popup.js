@@ -86,5 +86,5 @@ optionsButton.addEventListener('click', () => {
 
 let sourceButton = document.getElementById('source');
 sourceButton.addEventListener('click', () => {
-  window.open('https://github.com', '_blank');
+  window.open('https://github.com/Str0nkyK0ng/WaybackExtension', '_blank');
 });
