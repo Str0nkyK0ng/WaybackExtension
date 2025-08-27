@@ -34,6 +34,14 @@ export function isValidConfigJson(jsonText) {
     console.log('Testing JSON Config');
     let jsonObject = JSON.parse(jsonText);
     for (const [key, value] of Object.entries(jsonObject)) {
+      //validate the key is valid regex
+      try {
+        console.log('Testing regex for', key);
+        new RegExp(key);
+      } catch (e) {
+        throw Error('Invalid regex in entry:' + key);
+      }
+
       let start = value.start;
       let end = value.end;
       if (!start) {
