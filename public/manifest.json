@@ -1,6 +1,6 @@
 {
-  "name": "Tab Substitutor",
-  "description": "Base Level Extension",
+  "name": "Wayback Extension",
+  "description": "Replace the content of the current page with a previous version.",
   "version": "2.0",
   "manifest_version": 3,
   "host_permissions": ["<all_urls>"],
@@ -20,7 +20,7 @@
   },
 
   "action": {
-    "default_title": "Click to show an alert",
+    "default_title": "Click to see options.",
     "default_popup": "popup.html"
   },
   "content_scripts": [
