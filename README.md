@@ -11,12 +11,12 @@ Within the options folder you can change the following:
   - By default no configuration will be applied. Configurations must follow the following format:
   ```json5 
   {
-    "https://cdc.org/*":  //Regex expression of URL to match
+    "https://www.cdc.gov/.*":  //Regex expression of URL to match
     {
       "start": 20250101, //Jan 1st 2025 default start (YYYYmmDD)
       "end": 20250801 //August 1st 2025 default end (YYYYmmDD)
     },
-    "https://google.com/*":  //Regex expression of URL to match
+    "https://www.google.com/.*":  //Regex expression of URL to match
     {
       "start": 19950101, //Jan 1st 1995 default start (YYYYmmDD)
       "end": 20230801 //August 1st 2023 default end (YYYYmmDD)
