@@ -17,17 +17,14 @@ let configJson = document.getElementById('configJSON');
 // Saves options to chrome.storage
 const saveOptions = () => {
   let config = defaultConfig;
-  if (useCustomConfigCheckbox.checked) {
-    //first check if the json is valid
-    config = isValidConfigJson(configJson.value);
-    console.log('config', config);
-    if (config == false) {
-      status.textContent = 'Options could not be saved - JSON is invalid.';
-      setTimeout(() => {
-        status.textContent = '';
-      }, 750);
-      return;
-    }
+  config = isValidConfigJson(configJson.value);
+  console.log('config', config);
+  if (config == false) {
+    status.textContent = 'Options could not be saved - JSON is invalid.';
+    setTimeout(() => {
+      status.textContent = '';
+    }, 750);
+    return;
   }
 
   const oldContentColor = document.getElementById('oldContentColor').value;
@@ -63,13 +60,18 @@ const restoreOptions = () => {
       usingConfig: false,
     },
     (items) => {
+      console.log('Restored items:', items);
       document.getElementById('oldContentColor').value = items.oldContentColor;
       document.getElementById('newContentColor').value = items.newContentColor;
       useCustomConfigCheckbox.checked = items.usingConfig;
+      configJson.innerText = setAndFormatJSON(items.config);
       if (items.usingConfig) {
         console.log('loaded:', items.config);
-        configJson.innerText = setAndFormatJSON(items.config);
         showTextArea();
+      }
+      if (items.config == null) {
+        items.config = defaultConfig;
+        configJson.innerText = setAndFormatJSON(items.config);
       }
     }
   );

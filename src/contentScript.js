@@ -54,6 +54,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Calculating diff to apply');
 
     try {
+      //we don't care about the title or the alt text for images. So we will just remove those fields
+      // Remove alt and title attributes from img tags in both HTML strings
+      oldHTML = oldHTML.replace(/<img[^>]*>/gi, (match) => {
+        return match.replace(/\s+(alt|title)="[^"]*"/gi, '');
+      });
+
+      // get all the images
+      let imgs = document.documentElement.getElementsByTagName('img');
+      for (let img of imgs) {
+        img.removeAttribute('alt');
+        img.removeAttribute('title');
+      }
+
       document.documentElement.innerHTML = HtmlDiff.execute(
         oldHTML,
         document.documentElement.innerHTML
