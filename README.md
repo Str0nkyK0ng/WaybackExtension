@@ -7,9 +7,24 @@ The Wayback Extension searches the Internet Archive Wayback Machine for snapshot
 ## Options
 Within the options folder you can change the following:
 - Default Highlighting Colors
-- Default Date Ranges
-  - You can also set this up on a per page / URL basis.
-
+- Default Date Ranges For Different urls.
+  - By default no configuration will be applied. Configurations must follow the following format:
+  ```json
+  {
+    "https://cdc.org/*":  //Regex expression of URL to match
+    {
+      "start": 20250101, //Jan 1st 2025 default start (YYYYmmDD)
+      "end": 20250801 //August 1st 2025 default end (YYYYmmDD)
+    },
+    "https://google.com/*":  //Regex expression of URL to match
+    {
+      "start": 19950101, //Jan 1st 1995 default start (YYYYmmDD)
+      "end": 20230801 //August 1st 2023 default end (YYYYmmDD)
+    }
+  }
+  ```
+  - If multiple expressions match a URL, there is **no set rule** which will determine which one to apply.
+  
 ## Importing Into Chrome
 `npm run build` should create a build folder.
 Go to extensions. Click on "Load Unpacked" and then select the build folder.
