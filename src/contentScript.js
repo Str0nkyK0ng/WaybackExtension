@@ -1,5 +1,4 @@
 'use strict';
-import { DiffDOM } from 'diff-dom';
 
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
@@ -54,10 +53,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let oldHTML = request.payload.html;
     console.log('Calculating diff to apply');
 
-    document.documentElement.innerHTML = HtmlDiff.execute(
-      oldHTML,
-      document.documentElement.innerHTML
-    );
+    try {
+      document.documentElement.innerHTML = HtmlDiff.execute(
+        oldHTML,
+        document.documentElement.innerHTML
+      );
+    } catch (e) {
+      console.log('Error:', e);
+      chrome.runtime.sendMessage({
+        type: 'APPLY_FAIL',
+        error: e,
+      });
+      return;
+    }
 
     // Add styling for diff modifications
     const style = document.createElement('style');
@@ -80,3 +88,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   }
 });
+
+function ping() {
+  console.log('Alive');
+  setTimeout(() => {
+    ping();
+  }, 1000);
+}
+ping();

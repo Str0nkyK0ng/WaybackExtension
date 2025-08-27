@@ -26,6 +26,11 @@ async function getClosestSnapshot(url, start, end) {
   let data = await response.json();
   console.log('Closest earch Response:' + JSON.stringify(data));
 
+  //Handle the case where there is no closest snapshot
+  if (data.length < 1) {
+    console.log('No Snapshot in Range');
+  }
+
   // Send the response back to the popup
   chrome.runtime.sendMessage({
     type: 'SEARCH_RESULT',

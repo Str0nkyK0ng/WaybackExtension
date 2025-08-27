@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Extension Options</title>
+    <title>Options</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: monospace;
+        font-size: medium;
         margin: 20px;
         max-width: 500px;
       }
@@ -39,7 +40,6 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
-    <h1>Wayback Extension Options</h1>
     <div id="status"></div>
     <div class="option-group">
       <label for="oldContentColor">Old Content Highlight Color:</label>
@@ -51,8 +51,19 @@
       <input type="color" id="newContentColor" value="#ccffcc" />
     </div>
 
+    <div class="option-group">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <label for="useCustomConfig">Use Custom Configuration:</label>
+        <input type="checkbox" id="useCustomConfig" />
+      </div>
+
+      <textarea type="textArea" style="display: none" id="configJSON">
+      </textarea>
+      <p id="configErrors"></p>
+    </div>
     <button class="save-btn" id="saveBtn">Save Options</button>
 
     <script src="options.js"></script>
+    <script src="jsonOptions.js"></script>
   </body>
 </html>

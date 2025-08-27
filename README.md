@@ -1,5 +1,14 @@
 # <img src="public/icons/icon_48.png" width="45" align="left">  Wayback Extension
+[![The Recurse Center](https://img.shields.io/badge/created%20at-recurse%20center-white)](https://www.recurse.com/)
 
+## Usage
+The Wayback Extension searches the Internet Archive Wayback Machine for snapshots of your current page, then displays the content via "diff-like" highlighting. It is primarily designed for text changes.
+
+## Options
+Within the options folder you can change the following:
+- Default Highlighting Colors
+- Default Date Ranges
+  - You can also set this up on a per page / URL basis.
 
 ## Importing Into Chrome
 `npm run build` should create a build folder.
@@ -10,6 +19,5 @@ Go to extensions. Click on "Load Unpacked" and then select the build folder.
 - Run `npm run watch` to setup webpack
 - Run `web-ext run --target=chromium --source-dir ./build` to open up a Chrome Session that will auto-refresh
 
-## TODO: Contributors
-
-## TODO: Contributors
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
