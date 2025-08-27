@@ -9,7 +9,7 @@ Within the options folder you can change the following:
 - Default Highlighting Colors
 - Default Date Ranges For Different urls.
   - By default no configuration will be applied. Configurations must follow the following format:
-  ```json
+  ```json5 
   {
     "https://cdc.org/*":  //Regex expression of URL to match
     {
