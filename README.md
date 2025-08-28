@@ -31,8 +31,9 @@ Go to extensions. Click on "Load Unpacked" and then select the build folder.
 
 ## Development
 - This project was bootstrapped with [Chrome Extension CLI](https://github.com/dutiyesh/chrome-extension-cli)
+- Run `npm install` to get all the necessary packages
 - Run `npm run watch` to setup webpack
-- Run `web-ext run --target=chromium --source-dir ./build` to open up a Chrome Session that will auto-refresh
+- Run `web-ext run --target=chromium --source-dir ./build` to open up a Chrome Session that will auto-refresh the extension for you
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
