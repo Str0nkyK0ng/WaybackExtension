@@ -20,7 +20,7 @@ jobs:
       - run: npm run build
       - run: |
           cd build
-          zip -r ../build.zip .
+          zip -r ./build.zip ./build
       - uses: softprops/action-gh-release@v2
         with:
           files: build.zip
