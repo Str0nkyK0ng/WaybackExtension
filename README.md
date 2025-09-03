@@ -4,6 +4,9 @@
 ## Usage
 The Wayback Extension searches the Internet Archive Wayback Machine for snapshots of your current page, then displays the content via "diff-like" highlighting. It is primarily designed for text changes.
 
+## Contributors
+Thank you to [Florian Ragwitz](https://github.com/rafl) for helping me out with this!
+
 ## Options
 Within the options folder you can change the following:
 - Default Highlighting Colors
