@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return;
   }
   if (message.type === 'STATE_UPDATE') {
-    console.log('Got a runtime state update');
+    console.log('Got a runtime state update:', message.state);
     processState(message.state);
   }
 });
@@ -46,7 +46,11 @@ chrome.runtime.sendMessage({ type: 'GET_STATE' }, (response) => {
 });
 
 function processState(state) {
-  if (state.state == 'APPLY_SUCCESS' || state.state == 'IDLE') {
+  if (
+    state.state == 'APPLY_SUCCESS' ||
+    state.state == 'IDLE' ||
+    state.state == 'SNAPSHOT_SEARCH_COMPLETE'
+  ) {
     searchButton.disabled = false;
   } else {
     searchButton.disabled = true;

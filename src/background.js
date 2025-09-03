@@ -6,6 +6,40 @@ let stateData = {
   state: 'IDLE',
 };
 
+//tab data = name and state
+let tabData = {};
+
+let currentTabURL = '';
+
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  chrome.tabs.get(activeInfo.tabId, (tab) => {
+    swapToNewURL(tab.url);
+  });
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete') {
+    swapToNewURL(tab.url);
+  }
+});
+
+function swapToNewURL(newURL) {
+  // Store the old tab data only if we have a valid current URL
+  if (currentTabURL) {
+    console.log('Storing old tab data for:', currentTabURL, ' before leaving');
+    tabData[currentTabURL] = stateData;
+  }
+  currentTabURL = newURL;
+  // Restore state for the new tab or create default state
+  if (tabData[currentTabURL] != null) {
+    stateData = tabData[currentTabURL];
+    console.log('Tab switched to:', newURL, 'state:', stateData.state);
+  } else {
+    stateData = { state: 'IDLE' };
+    tabData[currentTabURL] = stateData;
+  }
+}
+
 async function getClosestSnapshot(url, start, end) {
   let urlParams = {
     url: utf8.encode(url),
@@ -97,6 +131,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   }
 
   if (request.type === 'INITIAL') {
+    console.log('Starting search');
     let url = request.payload.URL;
     let start = request.payload.start.replaceAll('-', '') + '010101';
     let end = request.payload.end.replaceAll('-', '') + '010101';
