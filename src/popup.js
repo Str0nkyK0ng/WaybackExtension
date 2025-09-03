@@ -24,9 +24,74 @@ let statusWheel = document.getElementById('spinning-icon');
 let foundDate = '';
 
 console.log('Popup script running:');
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type == 'APPLY_FAIL') {
+    updateStatus('An error occurred. Could not apply diff.');
+    hideWheel();
+    return;
+  }
+  if (message.type === 'STATE_UPDATE') {
+    console.log('Got a runtime state update');
+    processState(message.state);
+  }
+});
+
+//message the background worker asking for state
+chrome.runtime.sendMessage({ type: 'GET_STATE' }, (response) => {
+  if (response && response.state) {
+    // Handle the state response if needed
+    console.log('Current state:', response.state);
+    processState(response.state);
+  }
+});
+
+function processState(state) {
+  if (state.state == 'APPLY_SUCCESS' || state.state == 'IDLE') {
+    searchButton.disabled = false;
+  } else {
+    searchButton.disabled = true;
+  }
+
+  if (state.state == 'SNAPSHOT_SEARCH_COMPLETE') {
+    if (state.timestamp == null) {
+      updateStatus('No snapshot found in range.');
+      hideWheel();
+      return;
+    }
+
+    foundDate = state.timestamp;
+    foundDate =
+      foundDate.slice(0, 4) +
+      '-' +
+      foundDate.slice(4, 6) +
+      '-' +
+      foundDate.slice(6, 8);
+    updateStatus('Date Found! Loading HTML from ' + foundDate);
+    showWheel();
+  }
+  if (state.state == 'SNAPSHOT_SEARCH_BEGIN') {
+    updateStatus('Searching for closest date...');
+    startLoading();
+  }
+  if (state.state == 'APPLY_SUCCESS') {
+    foundDate = state.timestamp;
+    foundDate =
+      foundDate.slice(0, 4) +
+      '-' +
+      foundDate.slice(4, 6) +
+      '-' +
+      foundDate.slice(6, 8);
+    updateStatus('Showing diff from: ' + foundDate);
+    hideWheel();
+  }
+  //regardless set dates
+  if (state.state != 'IDLE') {
+    startDate.value = state.start;
+    endDate.value = state.end;
+  }
+}
 
 //determine the defaultStart and end based on the user's configs
-
 let defaultStart = new Date('2024-12-01');
 let defaultEnd = new Date('2025-01-01');
 const restoreOptions = async () => {
@@ -70,6 +135,7 @@ searchButton.addEventListener('click', () => {
   if (!start || !end) {
     updateStatus('Please select start and end dates.');
   } else {
+    searchButton.disabled = true;
     //Communicate to the contentScript:
     updateStatus('Searching for closest date...');
     startLoading();
@@ -83,40 +149,13 @@ searchButton.addEventListener('click', () => {
   }
 });
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type == 'APPLY_FAIL') {
-    updateStatus('An error occurred. Could not apply diff.');
-    hideWheel();
-
-    return;
-  }
-  if (message.type === 'SEARCH_RESULT') {
-    if (message.payload.timestamp == null) {
-      updateStatus('No snapshot found in range.');
-      hideWheel();
-      return;
-    }
-
-    foundDate = message.payload.timestamp;
-    foundDate =
-      foundDate.slice(0, 4) +
-      '-' +
-      foundDate.slice(4, 6) +
-      '-' +
-      foundDate.slice(6, 8);
-
-    updateStatus('Date Found! Loading HTML from ' + foundDate);
-  }
-  if (message.type == 'SEARCH_COMPLETE') {
-    updateStatus('Displaying differences from ' + foundDate);
-
-    hideWheel();
-  }
-});
-
 function updateStatus(status) {
   statusTooltip.textContent = status;
   statusDiv.style.display = '';
+}
+
+function showWheel() {
+  statusWheel.style.display = '';
 }
 
 function hideWheel() {

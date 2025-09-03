@@ -95,9 +95,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     `;
     document.head.appendChild(style);
 
-    // tell the popup that the work is complete
+    // tell the background worker (who manages state) that the search is done
     chrome.runtime.sendMessage({
-      type: 'SEARCH_COMPLETE',
+      type: 'APPLY_SUCCESS',
     });
   }
 });

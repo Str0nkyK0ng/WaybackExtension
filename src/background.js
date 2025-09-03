@@ -1,10 +1,11 @@
 'use strict';
-// With background scripts you can communicate with popup
-// and contentScript files.
-// For more information on background script,
-// See https://developer.chrome.com/extensions/background_pages
 const utf8 = require('utf8');
-console.log('Background Worker Initialized');
+console.log('Background Worker Initialized:' + new Date().toISOString());
+
+let stateData = {
+  state: 'IDLE',
+};
+
 async function getClosestSnapshot(url, start, end) {
   let urlParams = {
     url: utf8.encode(url),
@@ -26,24 +27,21 @@ async function getClosestSnapshot(url, start, end) {
   let data = await response.json();
   console.log('Closest earch Response:' + JSON.stringify(data));
 
-  //Handle the case where there is no closest snapshot
-  if (data.length < 1) {
-    console.log('No Snapshot in Range');
-  }
+  stateData = {
+    ...stateData,
+    state: 'SNAPSHOT_SEARCH_COMPLETE',
+    timestamp: data.length > 1 ? data[1][0] : null,
+    url: url,
+  };
 
   // Send the response back to the popup
   chrome.runtime.sendMessage({
-    type: 'SEARCH_RESULT',
-    payload: {
-      data: data,
-      url: url,
-      timestamp: data.length > 1 ? data[1][0] : null,
-    },
+    type: 'STATE_UPDATE',
+    state: stateData,
   });
 
   if (data.length > 1) {
-    // The first entry is the header, so we take the second one
-    return data[1][0]; // Return the timestamp
+    return data[1][0]; //  // The first entry is the header, so we take the second one
   } else {
     throw new Error('No archived snapshot available:' + JSON.stringify(data));
   }
@@ -69,7 +67,6 @@ async function getClosestArchive(site, date) {
 
 async function run(currentTab, startTime, endTime) {
   let closestDate = await getClosestSnapshot(currentTab, startTime, endTime);
-  console.log(`Closest date: ${closestDate}`);
   let closestURL = await getClosestArchive(currentTab, closestDate);
   console.log(`Got Old HTML Content: ${closestURL}`);
   return closestURL;
@@ -77,11 +74,40 @@ async function run(currentTab, startTime, endTime) {
 
 //communicate with the content script to use the html / url
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  if (request.type === 'APPLY_SUCCESS') {
+    console.log('Got APPLY_SUCCESS from content worker');
+    //set it in our state
+    stateData = {
+      ...stateData,
+      state: 'APPLY_SUCCESS',
+    };
+    chrome.runtime.sendMessage({
+      type: 'STATE_UPDATE',
+      state: stateData,
+    });
+  }
+
+  if (request.type === 'GET_STATE') {
+    //always just send the state to the popup
+    console.log('Providing state update');
+    sendResponse({
+      type: 'STATE_UPDATE',
+      state: stateData,
+    });
+  }
+
   if (request.type === 'INITIAL') {
     let url = request.payload.URL;
     let start = request.payload.start.replaceAll('-', '') + '010101';
     let end = request.payload.end.replaceAll('-', '') + '010101';
     console.log(start, end);
+
+    stateData = {
+      ...stateData,
+      state: 'SNAPSHOT_SEARCH_BEGIN',
+      start: request.payload.start,
+      end: request.payload.end,
+    };
 
     let html = await run(url, start, end);
 
