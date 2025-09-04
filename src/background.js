@@ -13,21 +13,21 @@ let currentTabURL = '';
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.tabs.get(activeInfo.tabId, (tab) => {
-    swapToNewURL(tab.url);
+    swapToNewURL(tab.url, tab.id);
   });
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
-    swapToNewURL(tab.url);
+    swapToNewURL(tab.url, tab.id);
   }
 });
 
-function swapToNewURL(newURL) {
+function swapToNewURL(newURL, tabId) {
   // Store the old tab data only if we have a valid current URL
   if (currentTabURL) {
     console.log('Storing old tab data for:', currentTabURL, ' before leaving');
-    tabData[currentTabURL] = stateData;
+    tabData[currentTabURL] = { ...stateData };
   }
   currentTabURL = newURL;
   // Restore state for the new tab or create default state
@@ -35,8 +35,8 @@ function swapToNewURL(newURL) {
     stateData = tabData[currentTabURL];
     console.log('Tab switched to:', newURL, 'state:', stateData.state);
   } else {
-    stateData = { state: 'IDLE' };
-    tabData[currentTabURL] = stateData;
+    stateData = { state: 'IDLE', tabId };
+    tabData[currentTabURL] = { ...stateData };
   }
 }
 
@@ -137,22 +137,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     let end = request.payload.end.replaceAll('-', '') + '010101';
     console.log(start, end);
 
-    stateData = {
-      ...stateData,
-      state: 'SNAPSHOT_SEARCH_BEGIN',
-      start: request.payload.start,
-      end: request.payload.end,
-    };
-
     let html = await run(url, start, end);
-
     //msg the contentScript the older html
-    console.log('Messaging content script');
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      lastFocusedWindow: true,
-    });
-    const response = await chrome.tabs.sendMessage(tab.id, {
+    console.log('Messaging content script:' + tabData[url].tabId);
+    chrome.tabs.sendMessage(tabData[url].tabId, {
       type: 'REPLACE',
       payload: {
         html,

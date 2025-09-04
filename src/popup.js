@@ -24,10 +24,14 @@ let statusWheel = document.getElementById('spinning-icon');
 let foundDate = '';
 
 console.log('Popup script running:');
+function displayFailure(e) {
+  updateStatus('An error occurred.', e);
+  hideWheel();
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type == 'APPLY_FAIL') {
-    updateStatus('An error occurred. Could not apply diff.');
-    hideWheel();
+    displayFailure();
     return;
   }
   if (message.type === 'STATE_UPDATE') {
