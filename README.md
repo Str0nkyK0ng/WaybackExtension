@@ -1,5 +1,6 @@
 # <img src="public/icons/icon_48.png" width="45" align="left">  Wayback Extension
-[![The Recurse Center](https://img.shields.io/badge/created%20at-recurse%20center-white)](https://www.recurse.com/)
+<img valign="middle" src="https://img.shields.io/github/release/Str0nkyK0ng/WaybackExtension.svg?logo=github&style=flat-square&labelColor=333"> <img valign="middle" src="https://img.shields.io/chrome-web-store/v/bmabepfeodcpocfagmpeklkagoalpcja.svg?label=%20&labelColor=333&logo=google-chrome&style=flat-square"> <img valign="middle" src="https://img.shields.io/badge/created%20at-recurse%20center-white)">
+
 
 ## Usage
 The Wayback Extension searches the Internet Archive Wayback Machine for snapshots of your current page, then displays the content via "diff-like" highlighting. It is primarily designed for text changes.
@@ -29,6 +30,9 @@ Within the options folder you can change the following:
   - If multiple expressions match a URL, there is **no set rule** which will determine which one to apply.
   
 ## Importing Into Chrome
+You can download it from the Chrome Web Store:
+- ![Google **Chrome** Web Store][link-cws] [][link-cws]
+- 
 `npm run build` should create a build folder.
 Go to extensions. Click on "Load Unpacked" and then select the build folder.
 

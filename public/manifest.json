@@ -1,9 +1,8 @@
 {
-  "name": "Wayback Machine Extension — revert webpages inside your browser",
+  "name": "Wayback Extension — revert tabs without leaving",
   "description": "Replace the content of the current page with a previous version.",
-  "version": "1.0.9",
+  "version": "1.1.0",
   "manifest_version": 3,
-  "host_permissions": ["<all_urls>"],
   "icons": {
     "16": "icons/icon_16.png",
     "32": "icons/icon_32.png",
