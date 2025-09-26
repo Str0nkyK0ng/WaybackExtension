@@ -27,6 +27,7 @@ await chrome.storage.sync.get(
   }
 );
 
+let mode = 'DIFF'; //default mode
 console.log('Content script running.');
 // Listen for message
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -37,6 +38,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log('Got message from popup');
     let start = request.payload.start;
     let end = request.payload.end;
+    mode = request.mode;
     let message = {
       type: 'INITIAL',
       payload: {
@@ -51,38 +53,38 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
   if (request.type === 'REPLACE') {
     let oldHTML = request.payload.html;
-    console.log('Calculating diff to apply');
+    if (mode == 'DIFF') {
+      console.log('Calculating diff to apply');
 
-    try {
-      //we don't care about the title or the alt text for images. So we will just remove those fields
-      // Remove alt and title attributes from img tags in both HTML strings
-      oldHTML = oldHTML.replace(/<img[^>]*>/gi, (match) => {
-        return match.replace(/\s+(alt|title)="[^"]*"/gi, '');
-      });
+      try {
+        //we don't care about the title or the alt text for images. So we will just remove those fields
+        // Remove alt and title attributes from img tags in both HTML strings
+        oldHTML = oldHTML.replace(/<img[^>]*>/gi, (match) => {
+          return match.replace(/\s+(alt|title)="[^"]*"/gi, '');
+        });
 
-      // get all the images
-      let imgs = document.documentElement.getElementsByTagName('img');
-      for (let img of imgs) {
-        img.removeAttribute('alt');
-        img.removeAttribute('title');
+        // get all the images
+        let imgs = document.documentElement.getElementsByTagName('img');
+        for (let img of imgs) {
+          img.removeAttribute('alt');
+          img.removeAttribute('title');
+        }
+
+        document.documentElement.innerHTML = HtmlDiff.execute(
+          oldHTML,
+          document.documentElement.innerHTML
+        );
+      } catch (e) {
+        console.log('Error:', e);
+        chrome.runtime.sendMessage({
+          type: 'APPLY_FAIL',
+          error: e,
+        });
+        return;
       }
-
-      document.documentElement.innerHTML = HtmlDiff.execute(
-        oldHTML,
-        document.documentElement.innerHTML
-      );
-    } catch (e) {
-      console.log('Error:', e);
-      chrome.runtime.sendMessage({
-        type: 'APPLY_FAIL',
-        error: e,
-      });
-      return;
-    }
-
-    // Add styling for diff modifications
-    const style = document.createElement('style');
-    style.textContent = `
+      // Add styling for diff modifications
+      const style = document.createElement('style');
+      style.textContent = `
       ins {
       background-color: ${newContentColor};
       font-style: italic;
@@ -91,9 +93,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       background-color: ${oldContentColor};
       font-style: italic;
       }
-
-    `;
-    document.head.appendChild(style);
+      `;
+      document.head.appendChild(style);
+    } else {
+      console.log('Replacing HTML to apply');
+      document.documentElement.innerHTML = oldHTML;
+      // apply a header to indicate that this is old content
+      let header = document.createElement('div');
+      header.style.position = 'fixed';
+      header.style.top = '0';
+      header.style.left = '0';
+      header.style.width = '100%';
+      header.style.backgroundColor = '#ffcc00';
+      header.style.color = 'black';
+      header.style.textAlign = 'center';
+      header.style.padding = '10px';
+      header.style.zIndex = '9999';
+      header.innerText = 'You are viewing a historical snapshot of this page.';
+      document.body.appendChild(header);
+    }
 
     // tell the background worker (who manages state) that the search is done
     chrome.runtime.sendMessage({
@@ -101,11 +119,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
   }
 });
-
-function ping() {
-  console.log('Alive');
-  setTimeout(() => {
-    ping();
-  }, 1000);
-}
-ping();

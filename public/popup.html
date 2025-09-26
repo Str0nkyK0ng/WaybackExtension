@@ -7,19 +7,24 @@
   </head>
   <body>
     <div class="app">
-
       <div class="header">
         <h1>
-        <img src="/icons/icon_32.png" alt="Wayback Extension Icon" class="popup-icon" />
-          
-          Wayback Extension 
-        <img src="/icons/icon_32.png" alt="Wayback Extension Icon" class="popup-icon" />
+          <img
+            src="/icons/icon_32.png"
+            alt="Wayback Extension Icon"
+            class="popup-icon"
+          />
+          Wayback Extension
+          <img
+            src="/icons/icon_32.png"
+            alt="Wayback Extension Icon"
+            class="popup-icon"
+          />
         </h1>
       </div>
-      
-            <div class="status-div" id="status-div">
-      <p class="status" id="status"></p>
 
+      <div class="status-div" id="status-div">
+        <p class="status" id="status"></p>
         <svg
           id="spinning-icon"
           stroke="currentColor"
@@ -44,6 +49,19 @@
           <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
         </svg>
       </div>
+
+      <!-- Mode toggle -->
+      <div class="mode-toggle" role="radiogroup" aria-label="Apply Mode">
+        <input type="radio" id="mode-diff" name="mode" value="DIFF" checked />
+        <label for="mode-diff" class="mode-option">SEE DIFFERENCES</label>
+
+        <input type="radio" id="mode-replace" name="mode" value="REPLACE" />
+        <label for="mode-replace" class="mode-option"
+          >JUST <br />
+          REPLACE</label
+        >
+      </div>
+
       <div class="button-container">
         <div>
           <label for="start">Earliest Date:</label>
@@ -68,14 +86,15 @@
         </div>
         <button id="search" class="button">Search</button>
       </div>
+
       <div class="footer">
         <button id="source" class="options">Source Code</button>
         ○
         <button id="options" class="options">Options</button>
       </div>
+
       <script src="applyConfig.js"></script>
       <script src="popup.js"></script>
-    </div>
     </div>
   </body>
 </html>

@@ -144,6 +144,8 @@ searchButton.addEventListener('click', () => {
     updateStatus('Please select start and end dates.');
   } else {
     searchButton.disabled = true;
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    console.log(mode); // "DIFF" or "REPLACE"
     //Communicate to the contentScript:
     updateStatus('Searching for closest date...');
     startLoading();
@@ -153,6 +155,7 @@ searchButton.addEventListener('click', () => {
         start,
         end,
       },
+      mode: mode,
     });
   }
 });

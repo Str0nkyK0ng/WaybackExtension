@@ -37,7 +37,6 @@ body {
   animation: spin 1s linear infinite;
   padding: 10px;
 }
-
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -46,12 +45,12 @@ body {
     transform: rotate(360deg);
   }
 }
+
 .title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 10px;
 }
-
 .subtitle {
   font-size: 12px;
 }
@@ -62,6 +61,45 @@ body {
   flex-direction: column;
   gap: 15px;
   align-items: center;
+}
+
+/* === MODE TOGGLE (DIFF / REPLACE) === */
+.mode-toggle {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 8px 0 2px;
+}
+
+.mode-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-option {
+  padding: 8px 14px;
+  font-size: 10px;
+  cursor: pointer;
+  user-select: none;
+  flex: 1;
+  background: #f7f7f7;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#mode-diff:checked + label,
+#mode-replace:checked + label {
+  background: #222;
+  color: #fff;
+}
+
+#mode-diff:focus-visible + label,
+#mode-replace:focus-visible + label {
+  outline: 2px solid #4d90fe;
+  outline-offset: -2px;
 }
 
 .button {
@@ -105,7 +143,6 @@ body {
 .button:focus {
   outline: none;
 }
-
 .button:hover {
   transform: scale(1.1);
 }
